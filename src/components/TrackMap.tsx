@@ -6,6 +6,9 @@ import { compass } from '../sim/strategy';
 
 const SECTOR_COLORS = ['#3987e5', '#c98500', '#199e70'];
 const sectorPaths = [1, 2, 3].map((s) => sectorPath(s as 1 | 2 | 3));
+// Extra canvas to the right of the circuit so the wind compass never sits on Turn 11.
+const COMPASS_GUTTER = 96;
+const MAP_W = TRACK_VIEW.w + COMPASS_GUTTER;
 const sf = pointAtDist(0);
 const sectorLabelAt = [0.13, 0.45, 0.8].map((d) => pointAtDist(d));
 
@@ -23,13 +26,13 @@ export function TrackMap({ sim }: { sim: RaceSim; frame: number }) {
 
   return (
     <div className="map-wrap">
-      <svg viewBox={`0 0 ${TRACK_VIEW.w} ${TRACK_VIEW.h}`} preserveAspectRatio="xMidYMid meet">
+      <svg viewBox={`0 0 ${MAP_W} ${TRACK_VIEW.h}`} preserveAspectRatio="xMidYMid meet">
         <defs>
           <pattern id="rain" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(24)">
             <line x1="0" y1="0" x2="0" y2="8" stroke="#7fd6ff" strokeWidth="1" />
           </pattern>
         </defs>
-        {w.rain > 0.04 && <rect width={TRACK_VIEW.w} height={TRACK_VIEW.h} fill="url(#rain)" opacity={Math.min(0.5, w.rain * 0.6)} />}
+        {w.rain > 0.04 && <rect width={MAP_W} height={TRACK_VIEW.h} fill="url(#rain)" opacity={Math.min(0.5, w.rain * 0.6)} />}
 
         <path d={TRACK_PATH} fill="none" stroke="#0a0d11" strokeWidth={19} strokeLinejoin="round" />
         <path d={TRACK_PATH} fill="none" stroke={w.wetness > 0.12 ? '#2c4258' : '#2a323e'} strokeWidth={14} strokeLinejoin="round" />
@@ -86,7 +89,7 @@ export function TrackMap({ sim }: { sim: RaceSim; frame: number }) {
         })}
 
         {/* north + wind */}
-        <g transform={`translate(${TRACK_VIEW.w - 62},58)`}>
+        <g transform={`translate(${MAP_W - 48},62)`}>
           <circle r={34} fill="#0a0d11" opacity={0.7} stroke="#364150" />
           {[0, 90, 180, 270].map((a) => <line key={a} x1={0} y1={-34} x2={0} y2={-29} stroke="#56647a" transform={`rotate(${a})`} />)}
           <text y={-38} textAnchor="middle" fill="var(--text-3)" fontSize={9.5} fontFamily="var(--mono)">N</text>
